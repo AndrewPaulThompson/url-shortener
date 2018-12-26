@@ -8,16 +8,16 @@ import (
     "os"
     "testing"
     "time"
-    "url-shortener/router"
+    "url-shortener/app"
 
     "github.com/speps/go-hashids"
 )
 
-var a router.App
+var a app.App
 
 func TestMain(m *testing.M) {
-    a = router.App{}
-    a.Initialize()
+    a = app.App{}
+    a.Initialise()
     code := m.Run()
     os.Exit(code)
 }

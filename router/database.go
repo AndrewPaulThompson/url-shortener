@@ -19,7 +19,7 @@ func (a *App) addToDatabase(url Url) {
 
     input := &dynamodb.PutItemInput{
         Item: av,
-        TableName: aws.String("Url-Mappings"),
+        TableName: aws.String(a.AwsConfig.tableName),
     }
 
     _, err = a.Client.PutItem(input)
@@ -28,7 +28,7 @@ func (a *App) addToDatabase(url Url) {
 // Gets Item from DynamoDB using it's longUrl
 func (a *App) lookupLongUrl(url Url) *dynamodb.GetItemOutput {
     result, err := a.Client.GetItem(&dynamodb.GetItemInput{
-        TableName: aws.String("Url-Mappings"),
+        TableName: aws.String(a.AwsConfig.tableName),
         Key: map[string]*dynamodb.AttributeValue{
             "longUrl": {
                 S: aws.String(url.LongUrl),
@@ -59,7 +59,7 @@ func (a *App) lookupId(id string) *dynamodb.ScanOutput {
         ExpressionAttributeValues: expr.Values(),
         FilterExpression:          expr.Filter(),
         ProjectionExpression:      expr.Projection(),
-        TableName:                 aws.String("Url-Mappings"),
+        TableName:                 aws.String(a.AwsConfig.tableName),
     }
 
     result, err := a.Client.Scan(params)

@@ -16,6 +16,7 @@ import (
 type App struct {
     Router *mux.Router
     Client *dynamodb.DynamoDB
+    Config Config
 }
 
 // Url structure inside DynamoDB
@@ -23,13 +24,23 @@ type App struct {
 // LongUrl  - The original (long) url
 // ShortUrl - The hosturl + ID
 type Url struct {
-    ID string       `json:"id"`
-    LongUrl string  `json:"longUrl"`
-    ShortUrl string `json:"shortUrl"`
+    ID          string  `json:"id"`
+    LongUrl     string  `json:"longUrl"`
+    ShortUrl    string  `json:"shortUrl"`
+}
+
+// AWS config needed for DynamoDB
+// Access Key & Secret Key are stored in environment variables
+// region       - Region of DynamoDB
+// tableName    - Table Name for entries
+type AwsConfig struct {
+    region          string
+    tableName       string
 }
 
 // Initialise the App object
 func (a *App) Initialise() {
+    a.initialiseConfig()
     a.Router = mux.NewRouter()
     a.Client = a.initialiseDatabase()
     a.initialiseRoutes()
@@ -39,7 +50,7 @@ func (a *App) Initialise() {
 // Returns DynamoDB client object
 func (a *App) initialiseDatabase() *dynamodb.DynamoDB {
     sess, _ := session.NewSession(&aws.Config{
-        Region: aws.String("us-west-1"),
+        Region: aws.String(a.AwsConfig.region),
         Endpoint: aws.String("http://localhost:8001")},
     )
 
@@ -55,4 +66,11 @@ func (a *App) initialiseRoutes() {
 // Runs the sever and listens for connections
 func (a *App) Run(addr string) {
     log.Fatal(http.ListenAndServe(addr, a.Router))
+}
+
+// Initialise AWS config
+func (a *App) initialiseConfig() {
+    a.AwsConfig = Config{}
+    a.AwsConfig.tableName = "Url-Mappings"
+    a.AwsConfig.region = "us-west-1"
 }

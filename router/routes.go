@@ -35,7 +35,7 @@ func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
         h, _        := hashids.NewWithData(hd)
         now         := time.Now()
         url.ID, _    = h.Encode([]int{int(now.Unix())})
-        url.ShortUrl = "http://localhost:8080/" + url.ID
+        url.ShortUrl = req.Host + "/" + url.ID
 
         a.addToDatabase(url)
         w.WriteHeader(http.StatusCreated)

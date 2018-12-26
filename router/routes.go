@@ -11,6 +11,13 @@ import (
     "github.com/speps/go-hashids"
 )
 
+// Handler Function for short url creation
+// Takes a long url as postdata (eg. {"longUrl":"https://www.google.com"})
+// Checks if the url has already been shortened, if not creates it.
+// Returns json object of shortened url
+// (eg. {"id":"nYmVZXE","longUrl":"https://www.google.com","shortUrl":"http://localhost:8080/nYmVZXE"})
+// Or invalid response
+// {"error":"Invalid request payload"}
 func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
     var url Url
 
@@ -19,6 +26,7 @@ func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
     if err != nil {
         w.WriteHeader(http.StatusBadRequest)
         json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request payload"})
+        return
     }
 
     result := a.lookupLongUrl(url)
@@ -45,6 +53,7 @@ func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
     json.NewEncoder(w).Encode(url)
 }
 
+// Handler Function for redirecting from short -> long urls
 func (a *App) redirectEndpoint(w http.ResponseWriter, req *http.Request) {
     params := mux.Vars(req)
     result := a.lookupId(params["id"])

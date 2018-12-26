@@ -9,6 +9,7 @@ import(
     "github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
+// Puts an Item into DynamoDb
 func (a *App) addToDatabase(url Url) {
     av, err := dynamodbattribute.MarshalMap(url)
 
@@ -24,6 +25,7 @@ func (a *App) addToDatabase(url Url) {
     _, err = a.Client.PutItem(input)
 }
 
+// Gets Item from DynamoDB using it's longUrl
 func (a *App) lookupLongUrl(url Url) *dynamodb.GetItemOutput {
     result, err := a.Client.GetItem(&dynamodb.GetItemInput{
         TableName: aws.String("Url-Mappings"),
@@ -41,6 +43,7 @@ func (a *App) lookupLongUrl(url Url) *dynamodb.GetItemOutput {
     return result
 }
 
+// Scans DynamoDB for existing routes using its ID
 func (a *App) lookupId(id string) *dynamodb.ScanOutput {
     filt := expression.Name("id").Equal(expression.Value(id))
     proj := expression.NamesList(expression.Name("id"), expression.Name("longUrl"), expression.Name("shortUrl"))

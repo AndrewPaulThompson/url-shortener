@@ -5,9 +5,10 @@ import (
     "fmt"
 )
 
+// Main function
 func main() {
     fmt.Println("Ready on port 8080")
     a := router.App{}
-    a.Initialize()
+    a.Initialise()
     a.Run(":8080")
 }

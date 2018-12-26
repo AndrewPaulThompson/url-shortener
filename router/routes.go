@@ -1,8 +1,8 @@
 package router
 
 import (
-    "net/http"
     "encoding/json"
+    "net/http"
     "fmt"
     "time"
 
@@ -48,6 +48,12 @@ func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
 func (a *App) redirectEndpoint(w http.ResponseWriter, req *http.Request) {
     params := mux.Vars(req)
     result := a.lookupId(params["id"])
+
+    if len(result.Items) == 0 {
+        w.WriteHeader(http.StatusNotFound)
+        json.NewEncoder(w).Encode(map[string]string{"error": "Not found"})
+        return
+    }
 
     url := Url{}
     err := dynamodbattribute.UnmarshalMap(result.Items[0], &url)

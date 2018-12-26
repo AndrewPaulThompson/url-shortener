@@ -2,11 +2,15 @@ package main_test
 
 import (
     "bytes"
+    "fmt"
     "net/http"
     "net/http/httptest"
-    "testing"
-    "url-shortener/router"
     "os"
+    "testing"
+    "time"
+    "url-shortener/router"
+
+    "github.com/speps/go-hashids"
 )
 
 var a router.App
@@ -25,8 +29,16 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 }
 
 func TestCreateUrl(t *testing.T) {
-    payload := []byte(`{"longUrl":"https://www.google.com"}`)
+    hd          := hashids.NewData()
+    h, _        := hashids.NewWithData(hd)
+    now         := time.Now()
+    id, _       := h.Encode([]int{int(now.Unix())})
+
+    url := fmt.Sprintf(`{"longUrl":"https://www.%s.com"}`, id)
+    payload := []byte(url)
     req, _ := http.NewRequest("POST", "/create", bytes.NewBuffer(payload))
+
+    // First attempt at creating
     response := executeRequest(req)
     checkResponseCode(t, http.StatusCreated, response.Code)
 }

@@ -1,14 +1,14 @@
 package main
 
 import (
-    "url-shortener/router"
+    "url-shortener/app"
     "fmt"
 )
 
 // Main function
 func main() {
     fmt.Println("Ready on port 8080")
-    a := router.App{}
+    a := app.App{}
     a.Initialise()
     a.Run(":8080")
 }

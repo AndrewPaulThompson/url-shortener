@@ -3,10 +3,12 @@ package app
 import (
     "log"
     "net/http"
+    "os"
 
     "github.com/aws/aws-sdk-go/aws"
     "github.com/aws/aws-sdk-go/aws/session"
     "github.com/aws/aws-sdk-go/service/dynamodb"
+    "github.com/joho/godotenv"
     "github.com/gorilla/mux"
 )
 
@@ -70,7 +72,13 @@ func (a *App) Run(addr string) {
 
 // Initialise AWS config
 func (a *App) initialiseConfig() {
+    // Load .env (for AWS creds)
+    err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
     a.AwsConfig = AwsConfig{}
-    a.AwsConfig.tableName = "Url-Mappings"
-    a.AwsConfig.region = "us-west-1"
+    a.AwsConfig.tableName = os.Getenv("AWS_DYNAMODB_TABLE_NAME")
+    a.AwsConfig.region = os.Getenv("AWS_REGION")
 }

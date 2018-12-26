@@ -14,9 +14,9 @@ import (
 // Router - Mux router, used for routing
 // Client - DynamoDB Client, used for connecting to DynamoDB instance
 type App struct {
-    Router *mux.Router
-    Client *dynamodb.DynamoDB
-    Config Config
+    Router      *mux.Router
+    Client      *dynamodb.DynamoDB
+    AwsConfig   AwsConfig
 }
 
 // Url structure inside DynamoDB
@@ -70,7 +70,7 @@ func (a *App) Run(addr string) {
 
 // Initialise AWS config
 func (a *App) initialiseConfig() {
-    a.AwsConfig = Config{}
+    a.AwsConfig = AwsConfig{}
     a.AwsConfig.tableName = "Url-Mappings"
     a.AwsConfig.region = "us-west-1"
 }

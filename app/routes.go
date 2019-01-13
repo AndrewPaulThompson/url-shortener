@@ -41,7 +41,13 @@ func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
 		h, _ := hashids.NewWithData(hd)
 		now := time.Now()
 		url.ID, _ = h.Encode([]int{int(now.Unix())})
-		url.ShortUrl = req.Host + "/" + url.ID
+
+		scheme := "http://"
+		if req.TLS != nil {
+			scheme = "https://"
+		}
+
+		url.ShortUrl = scheme + req.Host + "/" + url.ID
 
 		a.addToDatabase(url)
 		w.WriteHeader(http.StatusCreated)

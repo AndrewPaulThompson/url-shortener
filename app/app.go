@@ -61,6 +61,10 @@ func (a *App) initialiseDatabase() *dynamodb.DynamoDB {
 
 // Initialise Application Routes
 func (a *App) initialiseRoutes() {
+	s := http.StripPrefix("/public/", http.FileServer(http.Dir("./public/")))
+	a.Router.PathPrefix("/public/").Handler(s)
+
+	a.Router.HandleFunc("/", a.rootEndpoint).Methods("GET")
 	a.Router.HandleFunc("/create", a.createUrlEndpoint).Methods("POST")
 	a.Router.HandleFunc("/{id}", a.redirectEndpoint).Methods("GET")
 }

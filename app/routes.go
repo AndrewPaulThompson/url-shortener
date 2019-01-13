@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"time"
 
@@ -20,8 +21,13 @@ import (
 // {"error":"Invalid request payload"}
 func (a *App) createUrlEndpoint(w http.ResponseWriter, req *http.Request) {
 	var url Url
+	var err error
 
-	err := json.NewDecoder(req.Body).Decode(&url)
+	if req.FormValue("longUrl") != "" {
+		url.LongUrl = req.FormValue("longUrl")
+	} else {
+		err = json.NewDecoder(req.Body).Decode(&url)
+	}
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -73,4 +79,10 @@ func (a *App) redirectEndpoint(w http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(w, req, url.LongUrl, 301)
+}
+
+func (a *App) rootEndpoint(w http.ResponseWriter, req *http.Request) {
+	var S struct{}
+	tmpl := template.Must(template.ParseFiles("views/index.tmpl"))
+	tmpl.Execute(w, S)
 }
